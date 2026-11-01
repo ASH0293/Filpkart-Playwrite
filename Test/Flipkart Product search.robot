@@ -191,17 +191,23 @@ Flipkart Search Afnan Perfume
     Should Contain    ${product_details}    Supremacy
     Should Contain    ${product_details}    Collector
     ${all_details_dropdown}=    Set Variable    xpath=//div[@tabindex='0'][.//*[normalize-space(text())='All details']]
-    ${all_details_arrow}=    Set Variable    xpath=//div[@tabindex='0'][.//*[normalize-space(text())='All details']]//*[name()='svg']/parent::*
-    Wait For Elements State    ${all_details_arrow}    visible    timeout=15s
-    ${arrow_before}=    Evaluate JavaScript    ${all_details_dropdown}    element => element.querySelector('svg path[stroke]').getAttribute('d')
-    Click With Options    ${all_details_arrow}    position_x=16    position_y=16
-    Wait For Function
-    ...    element => element.querySelector('svg path[stroke]').getAttribute('d') !== '${arrow_before}'
-    ...    selector=${all_details_dropdown}
-    ...    timeout=15s
-    Wait For Elements State    text="Specifications"    visible    timeout=15s
-    Click    text="Specifications"
-    ${specifications}=    Get Text    body
+    Wait For Elements State    ${all_details_dropdown}    visible    timeout=15s
+    Click    text="All details"
+    Wait For Elements State    text="Description"    visible    timeout=15s
+    ${specifications}=    Set Variable    ${EMPTY}
+    FOR    ${tab}    IN    Specifications    Description    Manufacturer info
+        ${tab_locator}=    Set Variable    text="${tab}"
+        Wait For Elements State    ${tab_locator}    visible    timeout=15s
+        Evaluate JavaScript    ${tab_locator}    element => element.parentElement.click()
+        ${tab_selected}=    Evaluate JavaScript    ${tab_locator}    element => getComputedStyle(element.parentElement).backgroundColor === 'rgb(31, 31, 31)'
+        Should Be True    ${tab_selected}    ${tab} tab did not become selected
+        ${tab_content}=    Get Text    body
+        Should Contain    ${tab_content}    ${tab}
+        IF    $tab == 'Specifications'
+            ${specifications}=    Set Variable    ${tab_content}
+        END
+        Log To Console    Selected ${tab} tab.
+    END
     Should Contain    ${specifications}    Specifications
     Should Contain    ${specifications}    Supremacy Collector's Edition
     Should Contain    ${specifications}    Fragrance Classification
