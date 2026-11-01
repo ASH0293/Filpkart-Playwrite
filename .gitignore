@@ -1,0 +1,13 @@
+.venv/
+.venv-*/
+.tmp_pbtest/
+node_modules/
+browser/
+.robotcode_cache/
+.playwright-mcp/
+**/results/
+playwright-log*.txt
+.mcp.json
+.vscode/
+__pycache__/
+*.py[cod]
